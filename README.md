@@ -23,4 +23,4 @@ You can run a script from Jupyter using `%run path-to-src/my_script.py`.
 
 Edit `Dockerfile` and re-build if you need to add/remove packages. 
 To just launch a command such as `bash`, you can connect to the running container using
-`docker exec -it siim bash` 
+`sudo nvidia-docker run -v `pwd`/data:/workdir/data -v `pwd`/src:/wordir/src -v `pwd`/notebooks:/workdir/notebooks -it siim bash` 
