@@ -16,6 +16,8 @@ from wtfml.data_loaders.image import ClassificationLoader
 
 import pretrainedmodels
 
+NR_FOLDS = 5
+FOLDS_FILENAME = 'train_folds_{}.csv'.format(NR_FOLDS)
 
 
 class SEResnext50_32x4d(nn.Module):
@@ -48,7 +50,7 @@ class SEResnext50_32x4d(nn.Module):
 def train(fold):
 
     training_data_path = "../data/input/train224/"
-    df = pd.read_csv("train_folds.csv")
+    df = pd.read_csv(FOLDS_FILENAME)
     device = "cuda"
     epochs = 50
     train_bs = 32
@@ -134,7 +136,7 @@ def train(fold):
 
 def predict(fold):
     test_data_path = "../data/input/test224/"
-    df = pd.read_csv("../data/input/test.csv")
+    df = pd.read_csv("../data/raw/test.csv")
     device = "cuda"
     model_path=f"model_fold_{fold}.bin"
 
@@ -172,22 +174,19 @@ def predict(fold):
 
 if __name__ == "__main__":
 
-    if False:
+    if not os.path.exists(FOLDS_FILENAME):
         # create folds
-        df = pd.read_csv("../data/input/train.csv")
+        df = pd.read_csv("../data/raw/train.csv")
         df["kfold"] = -1
         df = df.sample(frac=1).reset_index(drop=True)
         y = df.target.values
-        kf = model_selection.StratifiedKFold(n_splits=5)
+        kf = model_selection.StratifiedKFold(n_splits=NR_FOLDS)
 
         for f, (t_, v_) in enumerate(kf.split(X=df, y=y)):
             df.loc[v_, 'kfold'] = f
 
-        df.to_csv("train_folds.csv", index=False)
+        df.to_csv(FOLDS_FILENAME, index=False)
 
-    train(0)
-    train(1)
-    train(2)
-    train(3)
-    train(4)
+    for fold in range(NR_FOLDS):
+        train(fold)
 
