@@ -2,6 +2,8 @@
 
 ## Conventions
 * `data/` contains the data (not committed on git)
+* `data/raw` contains the original uncompressed dataset
+* `data/input` contains pre-processed model inputs
 * `src/` contains the scripts and code, for reproducing results
 * `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`.
 For instance: `julien-resnetstests.ipynb`.
@@ -23,4 +25,4 @@ You can run a script from Jupyter using `%run path-to-src/my_script.py`.
 
 Edit `Dockerfile` and re-build if you need to add/remove packages. 
 To just launch a command such as `bash`, you can connect to the running container using
-`sudo nvidia-docker run -v `pwd`/data:/workdir/data -v `pwd`/src:/wordir/src -v `pwd`/notebooks:/workdir/notebooks -it siim bash` 
+`sudo nvidia-docker run -v `pwd`/data:/workdir/data -v `pwd`/src:/workdir/src -v `pwd`/notebooks:/workdir/notebooks -it siim bash` 
