@@ -31,6 +31,7 @@ ENV CONDA_AUTO_UPDATE_CONDA=false
 RUN conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
 RUN pip install torchnet wtfml pretrainedmodels torchsummary albumentations
 RUN conda install -y -c anaconda numpy pandas matplotlib scipy scikit-learn pillow joblib tqdm jupyter
+RUN pip install timm
 
 # will contain data, src and notebooks
 RUN mkdir /workdir/data/
