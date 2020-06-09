@@ -7,6 +7,8 @@
 * `src/` contains the scripts and code, for reproducing results
 * `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`. For instance: `julien-resnetstests.ipynb`.
 * `models/` contains models parameters from training (not committed on git)
+  * `models/yamls` contains yaml files to configure training
+  * `models/pths` supposed to stock models pth parameters files
 
 
 ## Docker setup (on Linux)
