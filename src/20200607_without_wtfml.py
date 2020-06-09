@@ -17,15 +17,9 @@ from torch.nn import functional as F
 import pretrainedmodels
 import timm
 
+from config import *
 
-# Parameters:
-DEVICE = 'cuda'
-NR_EPOCHS = 20
-TRAIN_BATCHSIZE = 32
-VALID_BATCHSIZE = 16
-NR_FOLDS = 5
-FOLDS_FILENAME = 'train_folds_{}.csv'.format(NR_FOLDS)
-PRETRAINED_MODEL = 'resnext50d_32x4d'
+
 
 # TODO: model-dependent
 MEAN = (0.485, 0.456, 0.406)
@@ -35,8 +29,7 @@ STD = (0.229, 0.224, 0.225)
 # PRETRAINED_OPT = 'imagenet'
 # MEAN = pretrainedmodels.pretrained_settings[PRETRAINED_MODEL][PRETRAINED_OPT]['mean']
 # STD = pretrainedmodels.pretrained_settings[PRETRAINED_MODEL][PRETRAINED_OPT]['std']
-INPUT_RESOLUTION = 224
-TRAINING_DATA_PATH = '../data/input/train{}/'.format(INPUT_RESOLUTION)
+
 
 
 # class MyModel(nn.Module):
@@ -75,7 +68,7 @@ class MyModel(nn.Module):
         """
         super(MyModel, self).__init__()
 
-        self.base_model = timm.create_model(PRETRAINED_MODEL, pretrained=True)
+        self.base_model = timm.create_model(Config.get_archi(), pretrained=True)
 
         # disable fine-tuning:
         for param in self.base_model.parameters():
@@ -150,7 +143,7 @@ def get_loader(df, valid: bool) -> DataLoader:
 
     return DataLoader(
         dataset, 
-        batch_size=VALID_BATCHSIZE if valid else TRAIN_BATCHSIZE, 
+        batch_size=Config.get_valid_bs() if valid else Config.get_train_bs(), 
         shuffle=(not valid),
         num_workers=4
     )
@@ -189,8 +182,8 @@ def train(model, loader, optimizer, scheduler):
     
     optimizer.zero_grad()
     for b_idx, (imgs, targets) in enumerate(tk0):
-        imgs = imgs.to(DEVICE)
-        targets = targets.to(DEVICE)
+        imgs = imgs.to(Config.get_device())
+        targets = targets.to(Config.get_device())
 
         out = model(imgs)
         loss = nn.BCEWithLogitsLoss()(out, targets.view(-1, 1))
@@ -214,7 +207,7 @@ def evaluate(model, loader):
     with torch.no_grad():
         tk0 = tqdm(loader, total=len(loader))
         for b_idx, (imgs, targets) in enumerate(tk0):
-            imgs = imgs.to(DEVICE)
+            imgs = imgs.to(Config.get_device())
             predictions = model(imgs).cpu()
             loss = nn.BCEWithLogitsLoss()(predictions, targets.view(-1, 1))
             losses.update(loss.item(), loader.batch_size)
@@ -231,9 +224,11 @@ def build_and_train(fold):
     valid_loader = get_loader(df_valid, valid=True)
 
     model = MyModel()
-    model.to(DEVICE)
+    model.to(Config.get_device())
     
-    optimizer = torch.optim.Adam(model.trainable_params(), lr=1e-4)
+    if Config.get_optimizer() == 'adam':
+        optimizer = torch.optim.Adam(model.trainable_params(), lr=Config.get_lr())
+    
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
         patience=3,
@@ -241,7 +236,7 @@ def build_and_train(fold):
         mode="max"
     )
 
-    for epoch in range(NR_EPOCHS):
+    for epoch in range(Config.get_nb_epochs()):
         train_loss = train(model, train_loader, optimizer, scheduler)
         predictions, valid_loss = evaluate(model, valid_loader)
         predictions = np.vstack((predictions)).ravel()
@@ -251,19 +246,13 @@ def build_and_train(fold):
 
 
 if __name__ == "__main__":
-    if not os.path.exists(FOLDS_FILENAME):
-        # create folds
-        df = pd.read_csv("../data/raw/train.csv")
-        df["kfold"] = -1
-        df = df.sample(frac=1).reset_index(drop=True)
-        y = df.target.values
-        kf = model_selection.StratifiedKFold(n_splits=NR_FOLDS)
 
-        for f, (t_, v_) in enumerate(kf.split(X=df, y=y)):
-            df.loc[v_, 'kfold'] = f
-
-        df.to_csv(FOLDS_FILENAME, index=False)
-
-    for fold in range(NR_FOLDS):
-        build_and_train(fold)
+    args = construct_hyper_param()
+    Config.init(args)
+    FOLDS_FILENAME = '../train_folds_{}.csv'.format(Config.get_nb_folds())
+    TRAINING_DATA_PATH = '../data/input/train{}/'.format(Config.get_input_res())
+    
+    for fold in Config.get_folds():
+        if fold < Config.get_nb_folds():
+            build_and_train(fold)
 

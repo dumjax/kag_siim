@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6b7f06d1-aa92-4f1b-a15e-afebfd3aef21" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1cj8dfysGuKUvNwzxkOBBArvhGh" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../heavymetal_project" />
+  </component>
+  <component name="RunManager" selected="Python.20200607_without_wtfml">
+    <configuration name="20200607_without_wtfml" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/anaconda3/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/20200607_without_wtfml.py" />
+      <option name="PARAMETERS" value="--train_cfg test1.yaml" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/anaconda3/bin/python" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.20200607_without_wtfml" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.20200607_without_wtfml" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6b7f06d1-aa92-4f1b-a15e-afebfd3aef21" name="Default Changelist" comment="" />
+      <created>1591030730904</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1591030730904</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2125" y="362" width="666" height="687" key="#20200607_without_wtfml" timestamp="1591729073581">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state x="2125" y="362" width="666" height="687" key="#20200607_without_wtfml/0.27.3440.1366@0.27.3440.1366" timestamp="1591729073581" />
+    <state x="2012" y="373" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591729141683">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state x="2012" y="373" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.3440.1366@0.27.3440.1366" timestamp="1591729141683" />
+    <state x="2118" y="509" width="569" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1591726368307">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state x="2118" y="509" width="569" height="396" key="#com.intellij.fileTypes.FileTypeChooser/0.27.3440.1366@0.27.3440.1366" timestamp="1591726368307" />
+    <state x="2030" y="351" width="666" height="854" key="#python_main" timestamp="1591421236967">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state x="2030" y="351" width="666" height="854" key="#python_main/0.27.3440.1366@0.27.3440.1366" timestamp="1591421236967" />
+    <state x="1227" y="362" width="424" height="484" key="FileChooserDialogImpl" timestamp="1591031804706">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state x="1227" y="362" width="424" height="484" key="FileChooserDialogImpl/0.27.3440.1366@0.27.3440.1366" timestamp="1591031804706" />
+    <state width="1872" height="426" key="GridCell.Tab.0.bottom" timestamp="1591733725053">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.0.bottom/0.27.3440.1366@0.27.3440.1366" timestamp="1591733725053" />
+    <state width="1872" height="426" key="GridCell.Tab.0.center" timestamp="1591733725052">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.0.center/0.27.3440.1366@0.27.3440.1366" timestamp="1591733725052" />
+    <state width="1872" height="426" key="GridCell.Tab.0.left" timestamp="1591733725052">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.0.left/0.27.3440.1366@0.27.3440.1366" timestamp="1591733725052" />
+    <state width="1872" height="426" key="GridCell.Tab.0.right" timestamp="1591733725053">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.0.right/0.27.3440.1366@0.27.3440.1366" timestamp="1591733725053" />
+    <state width="1872" height="426" key="GridCell.Tab.1.bottom" timestamp="1591733704025">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.1.bottom/0.27.3440.1366@0.27.3440.1366" timestamp="1591733704025" />
+    <state width="1872" height="426" key="GridCell.Tab.1.center" timestamp="1591733704025">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.1.center/0.27.3440.1366@0.27.3440.1366" timestamp="1591733704025" />
+    <state width="1872" height="426" key="GridCell.Tab.1.left" timestamp="1591733704025">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.1.left/0.27.3440.1366@0.27.3440.1366" timestamp="1591733704025" />
+    <state width="1872" height="426" key="GridCell.Tab.1.right" timestamp="1591733704025">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state width="1872" height="426" key="GridCell.Tab.1.right/0.27.3440.1366@0.27.3440.1366" timestamp="1591733704025" />
+    <state x="2126" y="360" width="672" height="678" key="search.everywhere.popup" timestamp="1591730092905">
+      <screen x="0" y="27" width="3440" height="1366" />
+    </state>
+    <state x="2126" y="360" width="672" height="678" key="search.everywhere.popup/0.27.3440.1366@0.27.3440.1366" timestamp="1591730092905" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/20200607_without_wtfml.py</url>
+          <line>253</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/20200607_without_wtfml.py</url>
+          <line>220</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="Config.get_device()" />
+        <watch expression="Config.nb_epochs()" />
+        <watch expression="Config.get_nb_folds()" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
