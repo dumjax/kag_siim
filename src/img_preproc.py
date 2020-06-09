@@ -6,10 +6,7 @@ from joblib import Parallel, delayed
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-input_folder = "../data/raw/jpeg/test/"
-output_folder = "../data/input/test224/"
-img_size = (224, 224)
-
+resolutions = [(224, 224), (288, 288), (300, 300), (320, 320)]
 
 def resize_image(image_path, output_folder, resize):
     base_name = os.path.basename(image_path)
@@ -20,16 +17,26 @@ def resize_image(image_path, output_folder, resize):
 
 
 def main():
-    images = glob.glob(os.path.join(input_folder, "*.jpg"))
-    Parallel(n_jobs=12)(
-        delayed(resize_image)(
-            i,
-            output_folder,
-            img_size
-        ) for i in tqdm(images)
-    )
+    for resolution in resolutions:
+        for traintest in ['train', 'test']:
+            print('processing {} at resolution {}...'.format(traintest, resolution))
+
+            in_folder = '../data/raw/jpeg/{}'.format(traintest)
+            out_folder = '../data/input/{}{}/'.format(traintest, resolution[0])
+            
+            if not os.path.exists(out_folder):
+                print('creating directory: {}'.format(out_folder))
+                os.makedirs(out_folder)
+
+            images = glob.glob(os.path.join(in_folder, "*.jpg"))
+            Parallel(n_jobs=12)(
+                delayed(resize_image)(
+                    i,
+                    out_folder,
+                    resolution
+                ) for i in tqdm(images)
+            )
 
 
 if __name__ == "__main__":
-
     main()
