@@ -24,7 +24,7 @@ NR_EPOCHS = 20
 TRAIN_BATCHSIZE = 32
 VALID_BATCHSIZE = 16
 NR_FOLDS = 5
-FOLDS_FILENAME = 'train_folds_{}.csv'.format(NR_FOLDS)
+FOLDS_FILENAME = '../train_folds_{}.csv'.format(NR_FOLDS)
 PRETRAINED_MODEL = 'resnext50d_32x4d'
 
 # TODO: model-dependent
@@ -81,10 +81,11 @@ class MyModel(nn.Module):
         for param in self.base_model.parameters():
             param.requires_grad = False
 
-        self.l0 = nn.Linear(2048, 1)
+        self.l0 = nn.Linear(2048, 512)
+        self.l1 = nn.Linear(512, 1)
 
     def trainable_params(self):
-        return self.l0.parameters()
+        return list(self.l0.parameters()) + list(self.l1.parameters())
         
     def forward(self, image):
         batch_size, _, _, _ = image.shape
@@ -92,9 +93,9 @@ class MyModel(nn.Module):
         x = self.base_model.forward_features(image)
         x = F.adaptive_avg_pool2d(x, 1).reshape(batch_size, -1)
 
-        out = self.l0(x)
+        x = self.l1(F.relu(self.l0(x)))
 
-        return out
+        return x
 
 
 class MyDataset(Dataset):
