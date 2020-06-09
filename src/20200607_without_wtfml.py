@@ -20,18 +20,6 @@ import timm
 from config import *
 
 
-<<<<<<< HEAD
-=======
-# Parameters:
-DEVICE = 'cuda'
-NR_EPOCHS = 20
-TRAIN_BATCHSIZE = 32
-VALID_BATCHSIZE = 16
-NR_FOLDS = 5
-FOLDS_FILENAME = '../train_folds_{}.csv'.format(NR_FOLDS)
-PRETRAINED_MODEL = 'resnext50d_32x4d'
->>>>>>> c770bb949816766703c1c886be6cc83fdcf6e8e1
-
 # TODO: model-dependent
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
