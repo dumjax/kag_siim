@@ -6,6 +6,7 @@
 * `data/input` contains pre-processed model inputs
 * `src/` contains the scripts and code, for reproducing results
 * `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`.
+* `models/` contains models parameters from training (not committed on git)
 For instance: `julien-resnetstests.ipynb`.
 
 ## Docker setup (on Linux)
