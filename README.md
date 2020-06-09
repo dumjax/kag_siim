@@ -5,8 +5,9 @@
 * `data/raw` contains the original uncompressed dataset
 * `data/input` contains pre-processed model inputs
 * `src/` contains the scripts and code, for reproducing results
-* `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`.
-For instance: `julien-resnetstests.ipynb`.
+* `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`. For instance: `julien-resnetstests.ipynb`.
+* `models/` contains models parameters from training (not committed on git)
+
 
 ## Docker setup (on Linux)
 * Install the nvidia-docker engine for your distribution. See here for how to install: https://github.com/NVIDIA/nvidia-docker
