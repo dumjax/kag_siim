@@ -32,7 +32,12 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../heavymetal_project" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+    </key>
   </component>
   <component name="RunManager" selected="Python.20200607_without_wtfml">
     <configuration name="20200607_without_wtfml" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -117,10 +122,10 @@
       <screen x="0" y="27" width="3440" height="1366" />
     </state>
     <state x="2030" y="351" width="666" height="854" key="#python_main/0.27.3440.1366@0.27.3440.1366" timestamp="1591421236967" />
-    <state x="1227" y="362" width="424" height="484" key="FileChooserDialogImpl" timestamp="1591031804706">
+    <state x="1227" y="362" width="424" height="484" key="FileChooserDialogImpl" timestamp="1591734289892">
       <screen x="0" y="27" width="3440" height="1366" />
     </state>
-    <state x="1227" y="362" width="424" height="484" key="FileChooserDialogImpl/0.27.3440.1366@0.27.3440.1366" timestamp="1591031804706" />
+    <state x="1227" y="362" width="424" height="484" key="FileChooserDialogImpl/0.27.3440.1366@0.27.3440.1366" timestamp="1591734289892" />
     <state width="1872" height="426" key="GridCell.Tab.0.bottom" timestamp="1591734057603">
       <screen x="0" y="27" width="3440" height="1366" />
     </state>
