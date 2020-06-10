@@ -1,4 +1,5 @@
 import os
+import sys
 import torch
 import albumentations
 from PIL import Image
@@ -18,6 +19,7 @@ import pretrainedmodels
 import timm
 
 from config import *
+from utils import *
 
 
 # TODO: model-dependent
@@ -145,7 +147,7 @@ def get_loader(df, valid: bool) -> DataLoader:
         dataset, 
         batch_size=Config.get_valid_bs() if valid else Config.get_train_bs(), 
         shuffle=(not valid),
-        num_workers=4
+        num_workers=Config.get_nb_workers()
     )
 
 class AverageMeter:
@@ -236,6 +238,10 @@ def build_and_train(fold):
         mode="max"
     )
 
+    es = EarlyStopping(config=Config, patience=5, mode="max")
+    auc = 0
+    train_loss=0
+    valid_loss=0
     for epoch in range(Config.get_nb_epochs()):
         train_loss = train(model, train_loader, optimizer, scheduler)
         predictions, valid_loss = evaluate(model, valid_loader)
@@ -243,12 +249,17 @@ def build_and_train(fold):
         auc = metrics.roc_auc_score(df_valid.target.values, predictions)
         print(f"Epoch = {epoch}, AUC = {auc}")
         # scheduler.step(auc)
-
+        es(auc, train_loss, valid_loss, model, model_path="../models/pths")
+        if es.early_stop:
+            print("Early stopping")
+            break
 
 if __name__ == "__main__":
 
     args = construct_hyper_param()
     Config.init(args)
+    Config.set_script_name(__file__.split("/")[-1])
+
     FOLDS_FILENAME = '../train_folds_{}.csv'.format(Config.get_nb_folds())
     TRAINING_DATA_PATH = '../data/input/train{}/'.format(Config.get_input_res())
     

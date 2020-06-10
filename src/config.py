@@ -7,6 +7,7 @@ import torch
 
 import argparse
 import os
+import sys
 
 from pathlib import Path
 
@@ -29,10 +30,16 @@ class Config(object):
 
     @staticmethod
     def init(args):
+
+        Config.script_name = "None"
+
         Config.args = args
-        
+
+        Config.set_yaml_name(sys.argv[2])
+
         Config.set_seed(args['SEED'])
-        
+
+        Config.set_model_name(args['MODEL_NAME'])
         Config.set_lr(args['LEARNING_RATE'])
         Config.set_optimizer(args['OPTIMIZER'])
         Config.set_train_bs(args['TRAIN_BATCHSIZE'])
@@ -42,6 +49,7 @@ class Config(object):
         Config.set_nb_folds(args['NB_FOLDS'])
         Config.set_input_res(args['INPUT_RESOLUTION'])
         Config.set_folds(args['FOLDS'])
+        Config.set_nb_workers(args["NB_WORKERS"])
         
         #TODO scheduler
         
@@ -171,6 +179,29 @@ class Config(object):
     def get_input_res():
         return Config.input_res
 
+    @staticmethod
+    def set_script_name(script_name):
+        Config.script_name = script_name
+
+    @staticmethod
+    def get_script_name():
+        return Config.script_name
+
+    @staticmethod
+    def set_yaml_name(yaml_name):
+        Config.yaml_name = yaml_name
+
+    @staticmethod
+    def get_yaml_name():
+        return Config.yaml_name
+
+    @staticmethod
+    def set_model_name(model_name):
+        Config.model_name = model_name
+
+    @staticmethod
+    def get_model_name():
+        return Config.model_name
 
     @staticmethod
     def get_args():

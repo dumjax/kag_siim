@@ -8,6 +8,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 resolutions = [(224, 224), (288, 288), (300, 300), (320, 320)]
 
+
 def resize_image(image_path, output_folder, resize):
     base_name = os.path.basename(image_path)
     outpath = os.path.join(output_folder, base_name)

@@ -1,13 +1,13 @@
 #name model
 # nomenclature : name -> fx max jul & number
-model_name: "max_1"
+MODEL_NAME: "max_1"
 
 # GPU
 SEED: 41
 DEVICE: 0
 TRAIN_BATCHSIZE: 32
 VALID_BATCHSIZE: 16
-NUM_WORKERS: 4
+NB_WORKERS: 4
 
 # Model img - general
 INPUT_RESOLUTION: 224
