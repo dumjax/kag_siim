@@ -4,3 +4,4 @@
 *.dcm
 *.tfrec
 notebooks/.ipynb_checkpoints/*
+.idea/*
