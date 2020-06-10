@@ -3,5 +3,6 @@
 *.bin
 *.dcm
 *.tfrec
+*.pth
 notebooks/.ipynb_checkpoints/*
 .idea/*
