@@ -6,6 +6,7 @@ import torch
 import os
 from distutils.dir_util import copy_tree
 from shutil import copy2
+from tensorboardX import SummaryWriter
 
 # create folds
 def folds_generator(nr_folds):
@@ -40,6 +41,7 @@ class EarlyStopping:
         self.best_score = None
         self.early_stop = False
         self.delta = delta
+        self.writer = None
         if self.mode == "min":
             self.val_score = np.Inf
         else:
@@ -52,6 +54,13 @@ class EarlyStopping:
             score = -1.0 * epoch_score
         else:
             score = np.copy(epoch_score)
+
+        if self.writer is None:
+            self.writer = \
+                SummaryWriter(os.path.join("../logs", self.model_name))
+        self.writer.add_scalar('train/loss', train_loss, self.epoch_n)
+        self.writer.add_scalar('valid/loss', valid_loss, self.epoch_n)
+        self.writer.add_scalar('valid/auc', epoch_score, self.epoch_n)
 
         if self.best_score is None:
             self.best_score = score
