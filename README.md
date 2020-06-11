@@ -11,7 +11,7 @@
   * `models/pths` supposed to stock models pth parameters files
 
 ## Tensorboard
-Just launch in root folder tensorboard --logdir ./logs/
+Just launch in root folder `tensorboard --logdir ./logs/`
 
 ## Docker setup (on Linux)
 * Install the nvidia-docker engine for your distribution. See here for how to install: https://github.com/NVIDIA/nvidia-docker
