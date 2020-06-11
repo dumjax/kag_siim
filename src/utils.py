@@ -30,8 +30,8 @@ def load_yaml(file_name):
 
 
 class EarlyStopping:
-    def __init__(self, config, patience=7, mode="max", delta=0.0001):
-        self.model_name = config.get_model_name()
+    def __init__(self, config, fold, patience=7, mode="max", delta=0.0001):
+        self.model_name = config.get_model_name()+'_'+str(fold)
         self.yaml_name = config.get_yaml_name()
         self.script_name = config.get_script_name()
         self.patience = patience
@@ -104,3 +104,27 @@ class EarlyStopping:
             copy2(os.path.join(os.path.abspath("../models/yamls/"), self.yaml_name), os.path.join(model_path, self.model_name))
         self.val_score = epoch_score
 
+
+class AverageMeter:
+    """
+    Computes and stores the average and current value.
+    Used for tracking/logging current loss only.
+    Source: https://github.com/abhishekkrthakur/wtfml/blob/master/wtfml/utils/average_meter.py
+    """
+    def __init__(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def reset(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = self.sum / self.count

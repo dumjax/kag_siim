@@ -10,7 +10,6 @@ VALID_BATCHSIZE: 16
 NB_WORKERS: 4
 
 # Model img - general
-INPUT_RESOLUTION: 224
 LEARNING_RATE: 0.0001
 NB_EPOCHS: 20
 PRETRAINED_MODEL: 'resnext50d_32x4d'
@@ -22,5 +21,6 @@ SCHEDULER:
 # transform albumentation json so we can control separately augmentations
 
 # Data
+INPUT_RESOLUTION: 224
 NB_FOLDS: 5
-FOLDS: [0 ,1 , 2, 3, 4]
+FOLDS: [0,1,2]

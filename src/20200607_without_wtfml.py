@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 import torch
 import albumentations
 from PIL import Image
@@ -21,80 +22,24 @@ import timm
 from config import *
 from utils import *
 
+from src.models.efficientnets import efficientnet_b3_mix_1
+
 
 # TODO: model-dependent
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
 
-# PRETRAINED_MODEL = 'se_resnext50_32x4d'
-# PRETRAINED_OPT = 'imagenet'
-# MEAN = pretrainedmodels.pretrained_settings[PRETRAINED_MODEL][PRETRAINED_OPT]['mean']
-# STD = pretrainedmodels.pretrained_settings[PRETRAINED_MODEL][PRETRAINED_OPT]['std']
-
-
-
-# class MyModel(nn.Module):
-#     def __init__(self, pretrained='imagenet'):
-#         """ Based on pretrainedmodels
-#         """
-#         super(MyModel, self).__init__()
-
-#         self.base_model = pretrainedmodels.__dict__[
-#             "se_resnext50_32x4d"
-#         ](pretrained=None)
-
-#         # disable fine-tuning:
-#         for param in self.base_model.parameters():
-#             param.requires_grad = False
-
-#         self.l0 = nn.Linear(2048, 1)
-
-#     def trainable_params(self):
-#         return self.l0.parameters()
-
-#     def forward(self, image):
-#         batch_size, _, _, _ = image.shape
-
-#         x = self.base_model.features(image)
-#         x = F.adaptive_avg_pool2d(x, 1).reshape(batch_size, -1)
-
-#         out = self.l0(x)
-
-#         return out
-
-
-class MyModel(nn.Module):
-    def __init__(self):
-        """ Based on timm
-        """
-        super(MyModel, self).__init__()
-
-        self.base_model = timm.create_model(Config.get_archi(), pretrained=True)
-
-        # disable fine-tuning:
-        for param in self.base_model.parameters():
-            param.requires_grad = False
-
-        self.l0 = nn.Linear(2048, 512)
-        self.l1 = nn.Linear(512, 1)
-
-    def trainable_params(self):
-        return list(self.l0.parameters()) + list(self.l1.parameters())
-        
-    def forward(self, image):
-        batch_size, _, _, _ = image.shape
-
-        x = self.base_model.forward_features(image)
-        x = F.adaptive_avg_pool2d(x, 1).reshape(batch_size, -1)
-
-        x = self.l1(F.relu(self.l0(x)))
-
-        return x
-
-
 class MyDataset(Dataset):
-    def __init__(self, image_paths, targets, augmentations=None):
+    def __init__(self, image_paths, genders, ages, targets, augmentations=None):
         self.image_paths = image_paths
+        self.genders = [0 if age == 'male' else (1 if age == 'female' else 0.5) for age in ages]  # TODO: use sklearn
+
+        # TODO: use sklearn for this stuff. Also: try categorical?
+        self.ages = [float(age) for age in ages]
+        median_age = np.median([a for a in self.ages if not math.isnan(a)])
+        self.ages = np.array([age if not math.isnan(age) else median_age for age in self.ages])
+        self.ages /= max(ages)
+
         self.targets = targets
         self.augmentations = augmentations
 
@@ -103,17 +48,21 @@ class MyDataset(Dataset):
 
     def __getitem__(self, item):
         image = Image.open(self.image_paths[item])
-        targets = self.targets[item]
+        target = self.targets[item]
+        gender = self.genders[item]
+        age = self.ages[item]
         image = np.array(image)
         if self.augmentations is not None:
             augmented = self.augmentations(image=image)
             image = augmented['image']
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)
 
-        imgs = torch.tensor(image, dtype=torch.float)
-        targets = torch.tensor(targets, dtype=torch.float)
+        img = torch.tensor(image, dtype=torch.float)
+        gender = torch.tensor(gender, dtype=torch.float)
+        age = torch.tensor(age, dtype=torch.float)
+        target = torch.tensor(target, dtype=torch.float)
 
-        return imgs, targets
+        return img, gender, age, target
 
 
 def get_loader(df, valid: bool) -> DataLoader:
@@ -135,10 +84,14 @@ def get_loader(df, valid: bool) -> DataLoader:
             ])
     
     images_fnames = list(map(lambda s: os.path.join(TRAINING_DATA_PATH, s + ".jpg"), df.image_name.values))
+    genders = df.sex.values
+    ages = df.age_approx.values
     targets = df.target.values
 
     dataset = MyDataset(
         image_paths=images_fnames,
+        genders=genders,
+        ages=ages,
         targets=targets,
         augmentations=augmentations,
     )
@@ -150,30 +103,6 @@ def get_loader(df, valid: bool) -> DataLoader:
         num_workers=Config.get_nb_workers()
     )
 
-class AverageMeter:
-    """
-    Computes and stores the average and current value.
-    Used for tracking/logging current loss only.
-    Source: https://github.com/abhishekkrthakur/wtfml/blob/master/wtfml/utils/average_meter.py
-    """
-    def __init__(self):
-        self.val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def reset(self):
-        self.val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def update(self, val, n=1):
-        self.val = val
-        self.sum += val * n
-        self.count += n
-        self.avg = self.sum / self.count
-
 
 def train(model, loader, optimizer, scheduler):
     losses = AverageMeter()
@@ -183,11 +112,13 @@ def train(model, loader, optimizer, scheduler):
     tk0 = tqdm(loader, total=len(loader))
     
     optimizer.zero_grad()
-    for b_idx, (imgs, targets) in enumerate(tk0):
+    for b_idx, (imgs, genders, ages, targets) in enumerate(tk0):
         imgs = imgs.to(Config.get_device())
+        genders = genders.to(Config.get_device())
+        ages = ages.to(Config.get_device())
         targets = targets.to(Config.get_device())
 
-        out = model(imgs)
+        out = model(imgs, genders, ages)
         loss = nn.BCEWithLogitsLoss()(out, targets.view(-1, 1))
         
         with torch.set_grad_enabled(True):
@@ -208,9 +139,11 @@ def evaluate(model, loader):
     model.eval()
     with torch.no_grad():
         tk0 = tqdm(loader, total=len(loader))
-        for b_idx, (imgs, targets) in enumerate(tk0):
+        for b_idx, (imgs, genders, ages, targets) in enumerate(tk0):
             imgs = imgs.to(Config.get_device())
-            predictions = model(imgs).cpu()
+            genders = genders.to(Config.get_device())
+            ages = ages.to(Config.get_device())
+            predictions = model(imgs, genders, ages).cpu()
             loss = nn.BCEWithLogitsLoss()(predictions, targets.view(-1, 1))
             losses.update(loss.item(), loader.batch_size)
             final_predictions.append(predictions)
@@ -225,7 +158,7 @@ def build_and_train(fold):
     train_loader = get_loader(df_train, valid=False)
     valid_loader = get_loader(df_valid, valid=True)
 
-    model = MyModel()
+    model = efficientnet_b3_mix_1(finetuning=True)
     model.to(Config.get_device())
     
     if Config.get_optimizer() == 'adam':
@@ -238,17 +171,15 @@ def build_and_train(fold):
         mode="max"
     )
 
-    es = EarlyStopping(config=Config, patience=5, mode="max")
-    auc = 0
-    train_loss=0
-    valid_loss=0
+    es = EarlyStopping(config=Config, fold=fold, patience=5, mode="max")
+
     for epoch in range(Config.get_nb_epochs()):
         train_loss = train(model, train_loader, optimizer, scheduler)
         predictions, valid_loss = evaluate(model, valid_loader)
         predictions = np.vstack((predictions)).ravel()
         auc = metrics.roc_auc_score(df_valid.target.values, predictions)
-        print(f"Epoch = {epoch}, AUC = {auc}")
-        # scheduler.step(auc)
+        #print(f"Epoch = {epoch}, AUC = {auc}")
+        scheduler.step(auc)
         es(auc, train_loss, valid_loss, model, model_path="../models/pths")
         if es.early_stop:
             print("Early stopping")
