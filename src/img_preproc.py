@@ -6,7 +6,7 @@ from joblib import Parallel, delayed
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-resolutions = [(300, 300)]
+resolutions = [(224, 224), (288, 288), (300, 300), (320, 320)]
 
 
 def resize_image(image_path, output_folder, resize):
