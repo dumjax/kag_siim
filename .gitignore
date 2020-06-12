@@ -6,3 +6,5 @@
 *.pth
 notebooks/.ipynb_checkpoints/*
 .idea/*
+src/__pycache__/*
+
