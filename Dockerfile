@@ -37,6 +37,8 @@ RUN pip install timm tensorboardX
 RUN mkdir /workdir/data/
 RUN mkdir /workdir/src/
 RUN mkdir /workdir/notebooks/
+RUN mkdir /workdir/models/
+RUN mkdir /workdir/logs/
 
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0"]
  
