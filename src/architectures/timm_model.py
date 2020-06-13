@@ -3,26 +3,33 @@ import torch.nn as nn
 from torch.nn import functional as F
 import timm
 
-USE_GENDER = False
-USE_AGE = False
+model_name_to_fc_dim = {
+    'efficientnet_b3': 1536
+}
 
 
-class efficientnet_b3_mix_1(nn.Module):
-    def __init__(self, finetuning):
+class TimmModel(nn.Module):
+    def __init__(self, config):
         """ Based on timm
         """
-        super(efficientnet_b3_mix_1, self).__init__()
+        super(TimmModel, self).__init__()
 
-        self.finetuning = finetuning
-        self.base_model = timm.create_model('efficientnet_b3', pretrained=True)
+        self.use_gender = config['USE_GENDER']
+        self.use_age = config['USE_AGE']
+        self.model_name = config['PRETRAINED_MODEL']
+        self.finetuning = config['FINETUNING']
 
-        if not finetuning:
+        self.base_model = timm.create_model(self.model_name, pretrained=True)
+
+        if not self.finetuning:
             # disable fine-tuning
             for param in self.base_model.parameters():
                 param.requires_grad = False
 
         # self.l0 = nn.Linear(2048, 1)
-        self.l0 = nn.Linear(1536, 1)
+        self.l0 = nn.Linear((model_name_to_fc_dim[self.model_name] 
+                             + (1 if self.use_gender else 0) + (1 if self.use_age else 0)), 
+                            1)
 
     def trainable_params(self):
         if self.finetuning:
@@ -36,9 +43,9 @@ class efficientnet_b3_mix_1(nn.Module):
         x = self.base_model.forward_features(image)
         x = F.adaptive_avg_pool2d(x, 1).reshape(batch_size, -1)
 
-        if USE_GENDER:
+        if self.use_gender:
             x = torch.cat((x, gender.unsqueeze(1)), 1)
-        if USE_AGE:
+        if self.use_age:
             x = torch.cat((x, age.unsqueeze(1)), 1)
 
         x = self.l0(x)

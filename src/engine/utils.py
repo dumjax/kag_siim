@@ -8,7 +8,7 @@ from distutils.dir_util import copy_tree
 from shutil import copy2
 from tensorboardX import SummaryWriter
 
-# create folds
+# create folds (normally won't need to be called again)
 def folds_generator(nr_folds):
     df = pd.read_csv("../data/raw/train.csv")
     df["kfold"] = -1
@@ -29,7 +29,7 @@ def load_yaml(file_name):
     return config
 
 
-class EarlyStopping:
+class EpochManager:
     def __init__(self, config, fold, patience=7, mode="max", delta=0.0001):
         self.model_name = config.get_model_name()+'_'+str(fold)
         self.yaml_name = config.get_yaml_name()
@@ -68,7 +68,7 @@ class EarlyStopping:
         elif score < self.best_score + self.delta:
             self.counter += 1
             print(
-                "EarlyStopping counter: {} out of {}".format(
+                "EpochManager counter: {} out of {}".format(
                     self.counter, self.patience
                 )
             )
@@ -101,7 +101,7 @@ class EarlyStopping:
                 os.makedirs(os.path.join(model_path, self.model_name, "src"))
             torch.save(state, os.path.join(model_path, self.model_name, self.model_name + ".pth"))
             copy_tree(os.path.abspath("../src"), os.path.abspath(os.path.join(model_path, self.model_name, "src")))
-            copy2(os.path.join(os.path.abspath("../models/yamls/"), self.yaml_name), os.path.join(model_path, self.model_name))
+            # copy2(os.path.join(os.path.abspath("../models/yamls/"), self.yaml_name), os.path.join(model_path, self.model_name))
         self.val_score = epoch_score
 
 
