@@ -22,7 +22,7 @@ import timm
 from config import *
 from utils import *
 
-from src.models.efficientnets import efficientnet_b3_mix_1
+from .models.timm_model import TimmModel
 
 
 # TODO: model-dependent

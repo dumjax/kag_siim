@@ -21,14 +21,15 @@ import timm
 
 # Parameters:
 DEVICE = 'cuda'
-NR_EPOCHS = 20
-TRAIN_BATCHSIZE = 16
+NR_EPOCHS = 30
+TRAIN_BATCHSIZE = 24
 VALID_BATCHSIZE = 16
 NR_FOLDS = 5
 FOLDS_FILENAME = '../train_folds_{}.csv'.format(NR_FOLDS)
 # PRETRAINED_MODEL = 'resnext50d_32x4d'
 # PRETRAINED_MODEL = 'mixnet_xl'
-PRETRAINED_MODEL = 'efficientnet_b3'
+# PRETRAINED_MODEL = 'efficientnet_b3'
+PRETRAINED_MODEL = 'efficientnet_b2a'
 FINETUNING = True
 
 USE_GENDER = False
@@ -39,7 +40,7 @@ MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
 
 
-INPUT_RESOLUTION = 300
+INPUT_RESOLUTION = 288
 TRAINING_DATA_PATH = '../data/input/train{}/'.format(INPUT_RESOLUTION)
 
 
@@ -58,13 +59,14 @@ class MyModel(nn.Module):
                 param.requires_grad = False
 
         # self.l0 = nn.Linear(2048, 1)
-        self.l0 = nn.Linear(1537, 1)
+        self.l0 = nn.Linear(1408 + (1 if USE_GENDER else 0) + (1 if USE_AGE else 0), 1)
+        # self.l1 = nn.Linear(512, 1)
 
     def trainable_params(self):
         if self.finetuning:
             return self.parameters()
         else:
-            return list(self.l0.parameters())  # + list(self.l1.parameters())
+            return list(self.l0.parameters()) # + list(self.l1.parameters())
         
     def forward(self, image, gender, age):
         batch_size, _, _, _ = image.shape
@@ -237,7 +239,7 @@ def build_and_train(fold):
     model = MyModel(finetuning=FINETUNING)
     model.to(DEVICE)
     
-    optimizer = torch.optim.Adam(model.trainable_params(), lr=1e-4)
+    optimizer = torch.optim.Adam(model.trainable_params(), lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
         patience=3,
