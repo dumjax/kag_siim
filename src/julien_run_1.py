@@ -1,5 +1,6 @@
 
 
+import os
 import torch
 import torch.nn as nn
 import albumentations
@@ -13,9 +14,10 @@ STD = (0.229, 0.224, 0.225)
 config = {
     ### Global parameters
     'NAME': 'julien_001',
+    'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
-    'FOLDS_FILENAME': '../train_folds_5.csv',
+    'FOLDS_FILENAME': 'train_folds_5.csv',
     'TRAINING_DATA_PATH': '../data/input/train288/',
     
     ### Model parameters
@@ -40,6 +42,7 @@ config = {
     'SCHEDULER_KWARGS': {'patience':3, 'threshold':0.001, 'mode':'max'},  # all arguments except optimizer
     'APPLY_SCHEDULER_EACH_MINIBATCH': False,  # If False, apply each epoch. No scheduler if SCHEDULER_CLS is None
 
+    'EARLYSTOP_PATIENCE': 5,
     'LOSS_FN': nn.BCEWithLogitsLoss(),
 
     ### Pre-processing parameters:

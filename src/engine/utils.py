@@ -23,11 +23,10 @@ def folds_generator(nr_folds):
 
 
 class EpochManager:
-    def __init__(self, config, fold, patience=7, mode="max", delta=0.0001):
-        self.model_name = config.get_model_name()+'_'+str(fold)
-        self.yaml_name = config.get_yaml_name()
-        self.script_name = config.get_script_name()
-        self.patience = patience
+    def __init__(self, config, fold, mode="max", delta=0.0001):
+        self.name = config['NAME']+'_'+str(fold)
+        self.script_name = config['SCRIPT_NAME']
+        self.patience = config['EARLYSTOP_PATIENCE']
         self.counter = 0
         self.epoch_n = 0
         self.mode = mode
@@ -81,7 +80,8 @@ class EpochManager:
                 )
             )
             state = {
-                 "name_script": self.script_name,
+                "name": self.name,
+                "script_name": self.script_name,
                 "epoch": self.epoch_n,
                 "auc": epoch_score,
                 "train_loss": self.train_loss,
@@ -89,12 +89,11 @@ class EpochManager:
                 "state_dict": model.state_dict
             }
 
-            if not os.path.exists(os.path.join(model_path, self.model_name)):
-                os.makedirs(os.path.join(model_path, self.model_name))
-                os.makedirs(os.path.join(model_path, self.model_name, "src"))
-            torch.save(state, os.path.join(model_path, self.model_name, self.model_name + ".pth"))
-            copy_tree(os.path.abspath("../src"), os.path.abspath(os.path.join(model_path, self.model_name, "src")))
-            # copy2(os.path.join(os.path.abspath("../models/yamls/"), self.yaml_name), os.path.join(model_path, self.model_name))
+            if not os.path.exists(os.path.join(model_path, self.name)):
+                os.makedirs(os.path.join(model_path, self.name))
+                os.makedirs(os.path.join(model_path, self.name, "src"))
+            torch.save(state, os.path.join(model_path, self.name, self.name + ".pth"))
+            copy_tree(os.path.abspath("../src"), os.path.abspath(os.path.join(model_path, self.name, "src")))
         self.val_score = epoch_score
 
 
