@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.0-base-ubuntu18.04
+FROM nvidia/cuda:9.2-base-ubuntu18.04
 
 # Install some basic utilities
 RUN apt-get update && apt-get install -y \
@@ -28,7 +28,7 @@ ENV PATH=/home/user/conda/bin:$PATH
 ENV CONDA_AUTO_UPDATE_CONDA=false
 
 # Install dependencies
-RUN conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
+RUN conda install pytorch torchvision cudatoolkit=9.2 -c pytorch
 RUN pip install torchnet wtfml pretrainedmodels torchsummary albumentations
 RUN conda install -y -c anaconda numpy pandas matplotlib scipy scikit-learn pillow joblib tqdm jupyter
 RUN pip install timm tensorboardX
