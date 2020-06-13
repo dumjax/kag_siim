@@ -6,9 +6,12 @@
 * `data/input` contains pre-processed model inputs
 * `src/` contains the scripts and code, for reproducing results
 * `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`. For instance: `julien-resnetstests.ipynb`.
-* `models/` contains models parameters from training (not committed on git)
-  * `models/yamls` contains yaml files to configure training
+* `models/` contains models parameters and historized source code from training (not committed on git)
   * `models/pths` supposed to stock models pth parameters files
+
+## Running Experiments
+* Specify your config in a script named like `src/<NAME>_blah.py` (see `src/julien_run_1.py` for an example)
+* From the folder `src/`, run `python <NAME>_blah.py`.
 
 ## Tensorboard
 Just launch in root folder `tensorboard --logdir ./logs/`
@@ -31,3 +34,5 @@ You can run a script from Jupyter using `%run path-to-src/my_script.py`.
 Edit `Dockerfile` and re-build if you need to add/remove packages. 
 To just launch a command such as `bash`, you can connect to the running container using
 `sudo nvidia-docker run --shm-size 8G -v `pwd`/data:/workdir/data -v `pwd`/src:/workdir/src -v `pwd`/notebooks:/workdir/notebooks -it siim bash`
+
+##
