@@ -49,7 +49,7 @@ class EpochManager:
 
         if self.writer is None:
             self.writer = \
-                SummaryWriter(os.path.join("../logs", self.model_name))
+                SummaryWriter(os.path.join("../logs", self.name))
         self.writer.add_scalar('train/loss', train_loss, self.epoch_n)
         self.writer.add_scalar('valid/loss', valid_loss, self.epoch_n)
         self.writer.add_scalar('valid/auc', epoch_score, self.epoch_n)
