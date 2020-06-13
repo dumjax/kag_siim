@@ -2,6 +2,7 @@
 
 import os
 import torch
+import torch.nn.functional as F
 import torch.nn as nn
 import albumentations
 
@@ -22,14 +23,12 @@ config = {
     
     ### Model parameters
     'MODEL_CLS': TimmModel,
-    'PRETRAINED_MODEL': 'efficientnet_b3',
-    'FINETUNING': True,
-    'USE_GENDER': False,
+    'PRETRAINED_MODEL': 'mixnet_m',
+    'FINETUNING': False,
+    'USE_GENDER': True,
     'USE_AGE': True,
-
-    # TODO:
-    # 'HIDDEN_LAYERS': [],
-    # 'NONLINEARITY': ,
+    'HIDDEN_SIZES': [128],
+    'NONLINEARITY': F.relu,
 
     ### Training parameters:
     'NR_EPOCHS': 20,
@@ -43,7 +42,7 @@ config = {
     'APPLY_SCHEDULER_EACH_MINIBATCH': False,  # If False, apply each epoch. No scheduler if SCHEDULER_CLS is None
 
     'EARLYSTOP_PATIENCE': 5,
-    'LOSS_FN': nn.BCEWithLogitsLoss(),
+    'LOSS_FN': nn.BCELoss(),
 
     ### Pre-processing parameters:
     'TRAIN_AUGMENTATIONS': albumentations.Compose(

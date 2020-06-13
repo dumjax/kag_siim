@@ -4,7 +4,8 @@ from torch.nn import functional as F
 import timm
 
 model_name_to_fc_dim = {
-    'efficientnet_b3': 1536
+    'efficientnet_b3': 1536,
+    'mixnet_m': 1536
 }
 
 
@@ -18,6 +19,7 @@ class TimmModel(nn.Module):
         self.use_age = config['USE_AGE']
         self.model_name = config['PRETRAINED_MODEL']
         self.finetuning = config['FINETUNING']
+        self.nonlinearity = config['NONLINEARITY']
 
         self.base_model = timm.create_model(self.model_name, pretrained=True)
 
@@ -26,21 +28,27 @@ class TimmModel(nn.Module):
             for param in self.base_model.parameters():
                 param.requires_grad = False
 
-        # self.l0 = nn.Linear(2048, 1)
-        self.l0 = nn.Linear((model_name_to_fc_dim[self.model_name] 
-                             + (1 if self.use_gender else 0) + (1 if self.use_age else 0)), 
-                            1)
+        # FC layers:
+        input_size = model_name_to_fc_dim[self.model_name] + (1 if self.use_gender else 0) + (1 if self.use_age else 0)
+        hidden_sizes = config['HIDDEN_SIZES']
+        all_sizes = [input_size] + hidden_sizes + [1]
+        self.fc_layers = nn.ModuleList([nn.Linear(all_sizes[i], all_sizes[i+1]) for i in range(len(all_sizes)-1)])
 
     def trainable_params(self):
         if self.finetuning:
             return self.parameters()
         else:
-            return list(self.l0.parameters())  # + list(self.l1.parameters())
+            params = []
+            for fc_layer in self.fc_layers:
+                params += list(fc_layer.parameters())
+            return params
 
     def forward(self, image, gender, age):
         batch_size, _, _, _ = image.shape
 
         x = self.base_model.forward_features(image)
+
+        # TODO: adapt this
         x = F.adaptive_avg_pool2d(x, 1).reshape(batch_size, -1)
 
         if self.use_gender:
@@ -48,6 +56,12 @@ class TimmModel(nn.Module):
         if self.use_age:
             x = torch.cat((x, age.unsqueeze(1)), 1)
 
-        x = self.l0(x)
+        for i, fc_layer in enumerate(self.fc_layers):
+            x = fc_layer(x)
+            if i < len(self.fc_layers) - 1:
+                x = self.nonlinearity(x)
+
+        # Output a probability
+        x = torch.sigmoid(x)
 
         return x
