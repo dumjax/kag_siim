@@ -22,13 +22,6 @@ def folds_generator(nr_folds):
     df.to_csv('train_folds_{}.csv'.format(nr_folds), index=False)
 
 
-def load_yaml(file_name):
-    with open(file_name, 'r') as stream:
-        config = yaml.load(stream, Loader=yaml.SafeLoader)
-
-    return config
-
-
 class EpochManager:
     def __init__(self, config, fold, patience=7, mode="max", delta=0.0001):
         self.model_name = config.get_model_name()+'_'+str(fold)
