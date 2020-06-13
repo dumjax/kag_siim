@@ -183,6 +183,6 @@ def launch(config):
     set_seed(config['SEED'])
     df = pd.read_csv(config['FOLDS_FILENAME'])
     nr_folds = len(df['kfold'].unique())
-    for fold in range(nr_folds):
+    for fold in range(max(nr_folds, config['NR_FOLDS'])):
         build_and_train(config, fold)
 

@@ -5,7 +5,8 @@ import timm
 
 model_name_to_fc_dim = {
     'efficientnet_b3': 1536,
-    'mixnet_m': 1536
+    'mixnet_m': 1536,
+    'resnext50_32x4d': 2048,
 }
 
 

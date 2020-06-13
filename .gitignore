@@ -6,5 +6,5 @@
 *.pth
 notebooks/.ipynb_checkpoints/*
 .idea/*
-src/__pycache__/*
-
+*/__pycache__/*
+!src/train_folds_5.csv

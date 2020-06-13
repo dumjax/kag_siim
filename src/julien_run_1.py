@@ -12,28 +12,36 @@ from architectures import TimmModel
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
 
+"""
+TODO
+
+* Reduce overfitting (more augmentations, more randomness, Dropout?)
+* Exponential/linear decrease of LR
+"""
+
 config = {
     ### Global parameters
-    'NAME': 'julien_001',
+    'NAME': 'julien_008',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
     'FOLDS_FILENAME': 'train_folds_5.csv',
-    'TRAINING_DATA_PATH': '../data/input/train288/',
+    'NR_FOLDS': 1,  # Number of folds to complete
+    'TRAINING_DATA_PATH': '../data/input/train224/',
     
     ### Model parameters
     'MODEL_CLS': TimmModel,
     'PRETRAINED_MODEL': 'mixnet_m',
-    'FINETUNING': False,
+    'FINETUNING': True,
     'USE_GENDER': True,
     'USE_AGE': True,
-    'HIDDEN_SIZES': [128],
+    'HIDDEN_SIZES': [],
     'NONLINEARITY': F.relu,
 
     ### Training parameters:
-    'NR_EPOCHS': 20,
-    'TRAIN_BATCHSIZE': 16,
-    'VALID_BATCHSIZE': 16,
+    'NR_EPOCHS': 50,
+    'TRAIN_BATCHSIZE': 32,
+    'VALID_BATCHSIZE': 32,
 
     'OPTIMIZER_CLS': torch.optim.Adam,
     'OPTIMIZER_KWARGS': {'lr': 1e-4},  # all arguments passed to optimizer, except model parameters
@@ -48,7 +56,10 @@ config = {
     'TRAIN_AUGMENTATIONS': albumentations.Compose(
             [
                 albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True),
-                albumentations.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1, rotate_limit=15),
+                albumentations.RGBShift(p=0.5),
+                albumentations.RandomContrast(p=0.5),
+                albumentations.GridDropout(ratio=0.1, p=0.5),
+                albumentations.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1, rotate_limit=15, p=0.8),
                 albumentations.Flip(p=0.5)
             ]),
     'VALID_AUGMENTATIONS': albumentations.Compose(
