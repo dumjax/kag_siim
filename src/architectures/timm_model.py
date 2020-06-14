@@ -70,7 +70,7 @@ class TimmModel(nn.Module):
         if self.use_age:
             x = torch.cat((x, age.unsqueeze(1)), 1)
         if self.use_sites:
-            x = torch.cat((x, sites.unsqueeze(1)), 1)
+            x = torch.cat((x, sites), 1)
 
         for i, fc_layer in enumerate(self.fc_layers):
             x = fc_layer(x)

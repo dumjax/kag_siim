@@ -85,7 +85,7 @@ def get_loader(config, df, valid: bool) -> DataLoader:
         image_paths=images_fnames,
         genders=genders,
         ages=ages,
-        sites=sites,
+        sites=sites_indicators,
         targets=targets,
     )
 
@@ -105,13 +105,14 @@ def train(config, model, loader, optimizer, scheduler):
     tk0 = tqdm(loader, total=len(loader))
     
     optimizer.zero_grad()
-    for b_idx, (imgs, genders, ages, targets) in enumerate(tk0):
+    for b_idx, (imgs, genders, ages, sites, targets) in enumerate(tk0):
         imgs = imgs.to(config['DEVICE'])
         genders = genders.to(config['DEVICE'])
         ages = ages.to(config['DEVICE'])
+        sites = sites.to(config['DEVICE'])
         targets = targets.to(config['DEVICE'])
 
-        out = model(imgs, genders, ages)
+        out = model(imgs, genders, ages, sites)
         loss = config['LOSS_FN'](out, targets.view(-1, 1))
         
         with torch.set_grad_enabled(True):
@@ -132,11 +133,12 @@ def evaluate(config, model, loader):
     model.eval()
     with torch.no_grad():
         tk0 = tqdm(loader, total=len(loader))
-        for b_idx, (imgs, genders, ages, targets) in enumerate(tk0):
+        for b_idx, (imgs, genders, ages, sites, targets) in enumerate(tk0):
             imgs = imgs.to(config['DEVICE'])
             genders = genders.to(config['DEVICE'])
             ages = ages.to(config['DEVICE'])
-            predictions = model(imgs, genders, ages).cpu()
+            sites = sites.to(config['DEVICE'])
+            predictions = model(imgs, genders, ages, sites).cpu()
             loss = config['LOSS_FN'](predictions, targets.view(-1, 1))
             losses.update(loss.item(), loader.batch_size)
             final_predictions.append(predictions)
