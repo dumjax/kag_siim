@@ -6,8 +6,7 @@
 * `data/input` contains pre-processed model inputs
 * `src/` contains the scripts and code, for reproducing results
 * `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`. For instance: `julien-resnetstests.ipynb`.
-* `models/` contains models parameters and historized source code from training (not committed on git)
-  * `models/pths` supposed to stock models pth parameters files
+* `models/` contains models parameters and historized source code from training (not committed on git) 
 
 ## Running Experiments
 * Specify your config in a script named like `src/<NAME>_blah.py` (see `src/julien_run_1.py` for an example)

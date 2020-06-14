@@ -17,7 +17,7 @@ from torch.nn import functional as F
 
 from .utils import AverageMeter, EpochManager
 
-MODELS_PATH = '../models'
+#MODELS_PATH = '../models'
 
 
 class MyDataset(Dataset):
@@ -162,7 +162,7 @@ def build_and_train(config, fold):
     else:
         scheduler = None
 
-    es = EpochManager(config=config, fold=fold, mode="max")
+    em = EpochManager(config=config, fold=fold, mode="max")
 
     for epoch in range(config['NR_EPOCHS']):
         train_loss = train(config, model, train_loader, optimizer, scheduler)
@@ -172,10 +172,10 @@ def build_and_train(config, fold):
         print(f"Epoch = {epoch}, AUC = {auc}")
         if scheduler is not None and not config['APPLY_SCHEDULER_EACH_MINIBATCH']:
             scheduler.step(auc)
-        es(auc, train_loss, valid_loss, model, model_path=MODELS_PATH)
-        if es.early_stop:
+        em(auc, train_loss, valid_loss, model)
+        if em.early_stop:
             print("Early stopping")
-            return es.best_score
+            return em.best_score
 
 
 def set_seed(seed):
