@@ -6,8 +6,16 @@ import timm
 model_name_to_fc_dim = {
     'efficientnet_b3': 1536,
     'mixnet_m': 1536,
+    'mixnet_xl': 1536,
     'resnext50_32x4d': 2048,
+    'efficientnet_b2a': 1408
 }
+
+def get_dim(name):
+    if name in model_name_to_fc_dim:
+        return model_name_to_fc_dim[name]
+    else:
+        return 2048
 
 
 class TimmModel(nn.Module):
@@ -18,6 +26,7 @@ class TimmModel(nn.Module):
 
         self.use_gender = config['USE_GENDER']
         self.use_age = config['USE_AGE']
+        self.use_sites = config['USE_SITES']
         self.model_name = config['PRETRAINED_MODEL']
         self.finetuning = config['FINETUNING']
         self.nonlinearity = config['NONLINEARITY']
@@ -30,7 +39,11 @@ class TimmModel(nn.Module):
                 param.requires_grad = False
 
         # FC layers:
-        input_size = model_name_to_fc_dim[self.model_name] + (1 if self.use_gender else 0) + (1 if self.use_age else 0)
+        input_size = (get_dim(self.model_name) 
+                      + (1 if self.use_gender else 0) 
+                      + (1 if self.use_age else 0)
+                      + (6 if self.use_sites else 0))
+
         hidden_sizes = config['HIDDEN_SIZES']
         all_sizes = [input_size] + hidden_sizes + [1]
         self.fc_layers = nn.ModuleList([nn.Linear(all_sizes[i], all_sizes[i+1]) for i in range(len(all_sizes)-1)])
@@ -44,7 +57,7 @@ class TimmModel(nn.Module):
                 params += list(fc_layer.parameters())
             return params
 
-    def forward(self, image, gender, age):
+    def forward(self, image, gender, age, sites):
         batch_size, _, _, _ = image.shape
 
         x = self.base_model.forward_features(image)
@@ -56,6 +69,8 @@ class TimmModel(nn.Module):
             x = torch.cat((x, gender.unsqueeze(1)), 1)
         if self.use_age:
             x = torch.cat((x, age.unsqueeze(1)), 1)
+        if self.use_sites:
+            x = torch.cat((x, sites.unsqueeze(1)), 1)
 
         for i, fc_layer in enumerate(self.fc_layers):
             x = fc_layer(x)

@@ -21,7 +21,7 @@ MODELS_PATH = '../models'
 
 
 class MyDataset(Dataset):
-    def __init__(self, config, valid, image_paths, genders, ages, targets):
+    def __init__(self, config, valid, image_paths, genders, ages, sites, targets):
         self.image_paths = image_paths
         self.genders = [0 if age == 'male' else (1 if age == 'female' else 0.5) for age in ages]  # TODO: use sklearn
 
@@ -30,6 +30,8 @@ class MyDataset(Dataset):
         median_age = np.median([a for a in self.ages if not math.isnan(a)])
         self.ages = np.array([age if not math.isnan(age) else median_age for age in self.ages])
         self.ages /= max(ages)
+
+        self.all_sites = sites  # list of binary columns values
 
         self.targets = targets
 
@@ -57,9 +59,10 @@ class MyDataset(Dataset):
         img = torch.tensor(image, dtype=torch.float)
         gender = torch.tensor(gender, dtype=torch.float)
         age = torch.tensor(age, dtype=torch.float)
+        sites = torch.tensor([s[item] for s in self.all_sites], dtype=torch.float)
         target = torch.tensor(target, dtype=torch.float)
 
-        return img, gender, age, target
+        return img, gender, age, sites, target
 
 
 def get_loader(config, df, valid: bool) -> DataLoader:
@@ -69,9 +72,12 @@ def get_loader(config, df, valid: bool) -> DataLoader:
     """    
     images_fnames = list(map(lambda s: os.path.join(config['TRAINING_DATA_PATH'], s + ".jpg"), 
                              df.image_name.values))
-    genders = df.sex.values
-    ages = df.age_approx.values
-    targets = df.target.values
+    
+    df_encoded = pd.get_dummies(df, columns=['anatom_site_general_challenge'])  # 1-hot encode
+    genders = df_encoded.sex.values
+    ages = df_encoded.age_approx.values
+    sites_indicators = [df_encoded[col].values for col in df_encoded.columns if col.startswith('anatom_site_general_challenge')]
+    targets = df_encoded.target.values
 
     dataset = MyDataset(
         config=config,
@@ -79,6 +85,7 @@ def get_loader(config, df, valid: bool) -> DataLoader:
         image_paths=images_fnames,
         genders=genders,
         ages=ages,
+        sites=sites,
         targets=targets,
     )
 
@@ -166,7 +173,7 @@ def build_and_train(config, fold):
         es(auc, train_loss, valid_loss, model, model_path=MODELS_PATH)
         if es.early_stop:
             print("Early stopping")
-            break
+            return es.best_score
 
 
 def set_seed(seed):
@@ -183,6 +190,9 @@ def launch(config):
     set_seed(config['SEED'])
     df = pd.read_csv(config['FOLDS_FILENAME'])
     nr_folds = len(df['kfold'].unique())
+    scores = []
     for fold in range(min(nr_folds, config['NR_FOLDS'])):
-        build_and_train(config, fold)
+        score = build_and_train(config, fold)
+        scores.append(score)
+    return scores
 
