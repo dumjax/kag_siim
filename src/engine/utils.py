@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import os
 from distutils.dir_util import copy_tree
+import shutil
 from shutil import copy2
 from tensorboardX import SummaryWriter
 
@@ -24,7 +25,10 @@ def folds_generator(nr_folds):
 
 class EpochManager:
     def __init__(self, config, fold, mode="max", delta=0.0001):
-        self.name = config['NAME']+'_'+str(fold)
+        self.name = config['NAME']
+        self.name_model = self.name + "_" + str(fold)
+        self.path_tensorboard = os.path.join('../logs', self.name_model)
+        self.path_model = os.path.join('../models', self.name)
         self.script_name = config['SCRIPT_NAME']
         self.patience = config['EARLYSTOP_PATIENCE']
         self.counter = 0
@@ -39,7 +43,16 @@ class EpochManager:
         else:
             self.val_score = -np.Inf
 
-    def __call__(self, epoch_score, train_loss, valid_loss, model, model_path):
+        if os.path.exists(os.path.join(self.path_model, self.name_model + ".pth")):
+            raise NameError(
+                'model pth {} already exists in folder {}. Please delete the folder or model if you dont want to keep it'.format(
+                    self.name_model, self.path_model)
+            )
+
+        if os.path.exists(os.path.join('../logs', self.name_model)):
+            shutil.rmtree(os.path.join('../logs', self.name_model))
+
+    def __call__(self, epoch_score, train_loss, valid_loss, model):
         self.train_loss = train_loss
         self.valid_loss = valid_loss
         if self.mode == "min":
@@ -47,16 +60,18 @@ class EpochManager:
         else:
             score = np.copy(epoch_score)
 
+
+
         if self.writer is None:
             self.writer = \
-                SummaryWriter(os.path.join("../logs", self.name))
+                SummaryWriter(os.path.join("../logs", self.name_model))
         self.writer.add_scalar('train/loss', train_loss, self.epoch_n)
         self.writer.add_scalar('valid/loss', valid_loss, self.epoch_n)
         self.writer.add_scalar('valid/auc', epoch_score, self.epoch_n)
 
         if self.best_score is None:
             self.best_score = score
-            self.save_checkpoint(epoch_score, model, model_path)
+            self.save_checkpoint(epoch_score, model)
         elif score < self.best_score + self.delta:
             self.counter += 1
             print(
@@ -68,11 +83,11 @@ class EpochManager:
                 self.early_stop = True
         else:
             self.best_score = score
-            self.save_checkpoint(epoch_score, model, model_path)
+            self.save_checkpoint(epoch_score, model)
             self.counter = 0
         self.epoch_n += 1
 
-    def save_checkpoint(self, epoch_score, model, model_path):
+    def save_checkpoint(self, epoch_score, model):
         if epoch_score not in [-np.inf, np.inf, -np.nan, np.nan]:
             print(
                 "Validation score improved ({} --> {}). Saving model!".format(
@@ -89,11 +104,13 @@ class EpochManager:
                 "state_dict": model.state_dict
             }
 
-            if not os.path.exists(os.path.join(model_path, self.name)):
-                os.makedirs(os.path.join(model_path, self.name))
-                os.makedirs(os.path.join(model_path, self.name, "src"))
-            torch.save(state, os.path.join(model_path, self.name, self.name + ".pth"))
-            copy_tree(os.path.abspath("../src"), os.path.abspath(os.path.join(model_path, self.name, "src")))
+            if not os.path.exists(self.path_model):
+                os.makedirs(self.path_model)
+                os.makedirs(os.path.join(self.path_model, "src"))
+                copy_tree(os.path.abspath("../src"), os.path.abspath(os.path.join(self.path_model, "src")))
+
+            torch.save(state, os.path.join(self.path_model, self.name_model + ".pth"))
+
         self.val_score = epoch_score
 
 
