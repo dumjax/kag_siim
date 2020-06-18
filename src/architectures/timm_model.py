@@ -5,10 +5,12 @@ import timm
 
 model_name_to_fc_dim = {
     'efficientnet_b3': 1536,
+    'tf_efficientnet_b3': 1536,
     'mixnet_m': 1536,
     'mixnet_xl': 1536,
     'resnext50_32x4d': 2048,
-    'efficientnet_b2a': 1408
+    'efficientnet_b2a': 1408,
+    'tf_efficientnet_b4_ns': 1792
 }
 
 def get_dim(name):
