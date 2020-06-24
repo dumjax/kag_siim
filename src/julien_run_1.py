@@ -21,12 +21,12 @@ TODO
 
 config = {
     ### Global parameters
-    'NAME': 'julien_029',
+    'NAME': 'julien_031',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
     'FOLDS_FILENAME': 'train_folds_5.csv',
-    'NR_FOLDS': 3,  # Number of folds to complete
+    'NR_FOLDS': 5,  # Number of folds to complete
     'TRAINING_DATA_PATH': '../data/input/train380/',
     
     ### Model parameters
@@ -36,7 +36,7 @@ config = {
     'USE_GENDER': False,
     'USE_AGE': True,
     'USE_SITES': False,
-    'HIDDEN_SIZES': [],
+    'HIDDEN_SIZES': [40],
     'NONLINEARITY': F.relu,
 
     ### Training parameters:
