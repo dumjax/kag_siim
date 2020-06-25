@@ -11,7 +11,7 @@ from tensorboardX import SummaryWriter
 
 # create folds (normally won't need to be called again)
 def folds_generator(nr_folds):
-    df = pd.read_csv("../data/raw/train.csv")
+    df = pd.read_csv("../../data/raw/train.csv")
     df["kfold"] = -1
     df = df.sample(frac=1).reset_index(drop=True)
     y = df.target.values
@@ -22,6 +22,17 @@ def folds_generator(nr_folds):
     'train_folds_{}.csv'.format(nr_folds)
     df.to_csv('train_folds_{}.csv'.format(nr_folds), index=False)
 
+
+def folds_generator_group(nr_folds):
+    df = pd.read_csv("../../data/raw/train.csv")
+    df["kfold"] = -1
+    df = df.sample(frac=1).reset_index(drop=True)
+    y = df.target.values
+    kf = model_selection.GroupKFold(n_splits=nr_folds)
+
+    for f, (t_, v_) in enumerate(kf.split(X=df, y=y, groups=df['patient_id'])):
+        df.loc[v_, 'kfold'] = f
+    df.to_csv('train_folds_group_{}.csv'.format(nr_folds), index=False)
 
 class EpochManager:
     def __init__(self, config, fold, mode="max", delta=0.0001):
@@ -137,3 +148,6 @@ class AverageMeter:
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+
+if __name__ == "__main__":
+    folds_generator_group(5)
