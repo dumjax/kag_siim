@@ -23,7 +23,7 @@ from .utils import AverageMeter, EpochManager
 class MyDataset(Dataset):
     def __init__(self, config, valid, image_paths, genders, ages, sites, targets):
         self.image_paths = image_paths
-        self.genders = [0 if age == 'male' else (1 if age == 'female' else 0.5) for age in ages]  # TODO: use sklearn
+        self.genders = [0 if g == 'male' else (1 if g == 'female' else 0.5) for g in genders]  # TODO: use sklearn
 
         # TODO: use sklearn for this stuff. Also: try categorical?
         self.ages = [float(age) for age in ages]
