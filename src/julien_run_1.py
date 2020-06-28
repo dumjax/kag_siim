@@ -8,7 +8,7 @@ import albumentations
 
 from copy import copy
 from engine import launch
-from architectures import TimmModel
+from architectures import TimmModel, EfficientNet
 
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
@@ -21,7 +21,7 @@ TODO
 
 config = {
     ### Global parameters
-    'NAME': 'julien_031',
+    'NAME': 'julien_033',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
@@ -30,12 +30,12 @@ config = {
     'TRAINING_DATA_PATH': '../data/input/train380/',
     
     ### Model parameters
-    'MODEL_CLS': TimmModel,
-    'PRETRAINED_MODEL': 'tf_efficientnet_b4_ns',  # Don't forget to update the training data path with correct resolution
+    'MODEL_CLS': EfficientNet,
+    'PRETRAINED_MODEL': 'efficientnet-b4',  # Don't forget to update the training data path with correct resolution
     'FINETUNING': True,
-    'USE_GENDER': False,
+    'USE_GENDER': True,
     'USE_AGE': True,
-    'USE_SITES': False,
+    'USE_SITES': True,
     'HIDDEN_SIZES': [40],
     'NONLINEARITY': F.relu,
 

@@ -164,11 +164,11 @@ class TimmModel2(nn.Module):
         return x
 
 
-class TimmModel3(nn.Module):
+class EfficientNet(nn.Module):
     def __init__(self, config):
-        """ Based on timm
+        """ Based on efficientnet_pytorch
         """
-        super(TimmModel2, self).__init__()
+        super(EfficientNet, self).__init__()
 
         self.use_gender = config['USE_GENDER']
         self.use_age = config['USE_AGE']
@@ -185,22 +185,22 @@ class TimmModel3(nn.Module):
 
         # FC layers:
         arch_out_size = get_dim(self.arch_name)
-        self.arch._fc = nn.Linear(in_features=arch_out_size, out_features=500, bias=True)
+        # self.arch._fc = nn.Linear(in_features=arch_out_size, out_features=500, bias=True)
 
         meta_in_size = (0
                         + (1 if self.use_gender else 0)
                         + (1 if self.use_age else 0)
                         + (6 if self.use_sites else 0))
 
-        self.fc_meta = nn.Sequential(nn.Linear(meta_in_size, 500),
-                                       nn.BatchNorm1d(500),
+        self.fc_meta = nn.Sequential(nn.Linear(meta_in_size, 20),
+                                       nn.BatchNorm1d(20),
                                        nn.ReLU(),
                                        nn.Dropout(p=0.2),
-                                       nn.Linear(500, 250),
-                                       nn.BatchNorm1d(250),
+                                       nn.Linear(20, 10),
+                                       nn.BatchNorm1d(10),
                                        nn.ReLU(),
                                        nn.Dropout(p=0.2))
-        self.output = nn.Linear(500 + 250, 1)
+        self.output = nn.Linear(arch_out_size + 10, 1)
 
     def trainable_params(self):
         if self.finetuning:
@@ -212,22 +212,21 @@ class TimmModel3(nn.Module):
             return params
 
     def forward(self, image, gender, age, sites):
+        batch_size, _, _, _ = image.shape
 
         meta = []
         if self.use_gender:
             meta.append(gender.unsqueeze(1))
-            #meta = torch.cat((meta, gender.unsqueeze(1)), 1)
         if self.use_age:
             meta.append(age.unsqueeze(1))
-            #meta = torch.cat((meta, age.unsqueeze(1)), 1)
         if self.use_sites:
             meta.append(sites)
-            #meta = torch.cat((meta, sites), 1)
 
         meta = torch.cat(meta, dim=1)
 
         meta_features = self.fc_meta(meta)
-        cnn_features = self.arch(image)
+        cnn_features = self.arch.extract_features(image)
+        cnn_features = F.adaptive_avg_pool2d(cnn_features, 1).reshape(batch_size, -1)
         features = torch.cat((cnn_features, meta_features), dim=1)
 
         x = self.output(features)
