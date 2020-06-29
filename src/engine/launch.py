@@ -215,8 +215,10 @@ def launch(config):
     return scores
 
 
-def load_model(model_path, model_name, config):
+def load_model(config):
     # TODO check number of pth in model folder and run on them
+    model_path = os.path.join(config['ABS_PATH'], "models")
+    model_name = config['NAME']
     models = []
     for i in range(config['NR_FOLDS']):
         path_tmp = os.path.join(model_path, model_name, model_name+"_"+str(i)+".pth")
@@ -229,7 +231,7 @@ def load_model(model_path, model_name, config):
     return models
 
 
-def eval_submission(model_name, config):
+def eval_submission(config):
     df_sub = pd.read_csv(os.path.join(config['ABS_PATH'], "data/raw",  "sample_submission.csv"))
     df_test = pd.read_csv(os.path.join(config['ABS_PATH'], "data/raw/test.csv"))
 
@@ -237,7 +239,7 @@ def eval_submission(model_name, config):
     preds = torch.zeros((len(test_loader.dataset), 1), dtype=torch.float32)
 
     batch_size = config['VALID_BATCHSIZE']
-    models = load_model(os.path.join(config['ABS_PATH'], "models"), model_name, config)
+    models = load_model(config)
     for m in models:
         m.eval()
 
@@ -253,4 +255,4 @@ def eval_submission(model_name, config):
 
     preds /= len(models)
     df_sub['target'] = preds.numpy().reshape(-1,)
-    df_sub.to_csv(os.path.join(config['ABS_PATH'], "models", model_name, model_name+"_sub.csv"), index=False)
+    df_sub.to_csv(os.path.join(config['ABS_PATH'], "models", config['NAME'], config['NAME']+"_sub.csv"), index=False)

@@ -79,5 +79,5 @@ config = {
 if __name__ == '__main__':
     res1 = launch(config)
     print('res1: {}'.format(res1))
-    eval_submission(config['NAME'], config)
+    eval_submission(config)
 
