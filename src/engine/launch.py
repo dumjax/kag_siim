@@ -78,9 +78,9 @@ def get_loader(config, df, valid: bool, test=False) -> DataLoader:
     valid: whether this is a validation set (otherwise it's a training set)
     """
     if test:
-        img_path = config['TEST_DATA_PATH']
+        img_path = os.path.join(config['ABS_PATH'], config['TEST_DATA_PATH'])
     else:
-        img_path = config['TRAINING_DATA_PATH']
+        img_path = os.path.join(config['ABS_PATH'], config['TRAINING_DATA_PATH'])
 
     images_fnames = list(map(lambda s: os.path.join(img_path, s + ".jpg"), df.image_name.values))
     
@@ -206,7 +206,7 @@ def set_seed(seed):
 
 def launch(config):
     set_seed(config['SEED'])
-    df = pd.read_csv(config['FOLDS_FILENAME'])
+    df = pd.read_csv(os.path.join(config['ABS_PATH'], "src", config['FOLDS_FILENAME']))
     nr_folds = len(df['kfold'].unique())
     scores = []
     for fold in range(min(nr_folds, config['NR_FOLDS'])):
@@ -229,14 +229,15 @@ def load_model(model_path, model_name, config):
     return models
 
 
-def eval_submission(model_path, model_name, submission_path, config):
-    df_sub = pd.read_csv(os.path.join(submission_path, "sample_submission.csv"))
-    df_test = pd.read_csv("../data/raw/test.csv")
+def eval_submission(model_name, config):
+    df_sub = pd.read_csv(os.path.join(config['ABS_PATH'], "data/raw",  "sample_submission.csv"))
+    df_test = pd.read_csv(os.path.join(config['ABS_PATH'], "data/raw/test.csv"))
+
     test_loader = get_loader(config, df_test, valid=True, test=True)
     preds = torch.zeros((len(test_loader.dataset), 1), dtype=torch.float32)
 
     batch_size = config['VALID_BATCHSIZE']
-    models = load_model(model_path, model_name, config)
+    models = load_model(os.path.join(config['ABS_PATH'], "models"), model_name, config)
     for m in models:
         m.eval()
 
@@ -252,4 +253,4 @@ def eval_submission(model_path, model_name, submission_path, config):
 
     preds /= len(models)
     df_sub['target'] = preds.numpy().reshape(-1,)
-    df_sub.to_csv(os.path.join('../models', model_name, model_name+"_sub.csv"), index=False)
+    df_sub.to_csv(os.path.join(config['ABS_PATH'], "models", model_name, model_name+"_sub.csv"), index=False)

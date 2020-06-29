@@ -19,18 +19,19 @@ TODO
 * Check image scaling method depending on model (bicubic vs bilinear)
 """
 
-abs_path = os.getcwd()
+#abs_path = os.getcwd()
 
 config = {
     ### Global parameters
+    'ABS_PATH': "/home/dumjax/projects/kag_siim",
     'NAME': 'max_09',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
-    'FOLDS_FILENAME': 'train_folds_5.csv',
+    'FOLDS_FILENAME': 'train_folds_group_5.csv',
     'NR_FOLDS': 5,  # Number of folds to complete
-    'TRAINING_DATA_PATH': '../data/input/train380/',
-    'TEST_DATA_PATH': '../data/input/test380/',
+    'TRAINING_DATA_PATH': 'data/input/train380/',
+    'TEST_DATA_PATH': 'data/input/test380/',
     
     ### Model parameters
     'MODEL_CLS': EfficientNetMix,
@@ -54,7 +55,7 @@ config = {
     'SCHEDULER_KWARGS': {'gamma': 0.9},  # all arguments except optimizer
     'APPLY_SCHEDULER_EACH_MINIBATCH': False,  # If False, apply each epoch. No scheduler if SCHEDULER_CLS is None
 
-    'EARLYSTOP_PATIENCE': 7,
+    'EARLYSTOP_PATIENCE': 3,
     'LOSS_FN': nn.BCELoss(),
 
     ### Pre-processing parameters:
@@ -78,5 +79,5 @@ config = {
 if __name__ == '__main__':
     res1 = launch(config)
     print('res1: {}'.format(res1))
-    eval_submission("../models/", config['NAME'], '../data/raw', config)
+    eval_submission(config['NAME'], config)
 

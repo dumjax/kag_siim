@@ -21,14 +21,16 @@ TODO
 
 config = {
     ### Global parameters
+    'ABS_PATH': "?",
     'NAME': 'julien_033',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
     'FOLDS_FILENAME': 'train_folds_5.csv',
     'NR_FOLDS': 5,  # Number of folds to complete
-    'TRAINING_DATA_PATH': '../data/input/train380/',
-    
+    'TRAINING_DATA_PATH': 'data/input/train380/',
+    'TEST_DATA_PATH': 'data/input/test380/',
+
     ### Model parameters
     'MODEL_CLS': EfficientNet,
     'PRETRAINED_MODEL': 'efficientnet-b4',  # Don't forget to update the training data path with correct resolution
