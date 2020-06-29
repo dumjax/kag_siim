@@ -13,6 +13,7 @@ model_name_to_fc_dim = {
     'efficientnet_b2a': 1408,
     'tf_efficientnet_b4_ns': 1792,
     'efficientnet-b0': 1280,
+    'efficientnet-b1': 1280,
     'efficientnet-b4': 1792
 }
 
@@ -177,7 +178,8 @@ class EfficientNetMix(nn.Module):
         self.arch_name = config['PRETRAINED_MODEL']
         self.finetuning = config['FINETUNING']
 
-        self.arch = EfficientNet.from_pretrained(self.arch_name)
+        advprop = config['ADVPROP'] if 'ADVPROP' in config else False
+        self.arch = EfficientNet.from_pretrained(self.arch_name, advprop=advprop)
 
         if not self.finetuning:
             # disable fine-tuning

@@ -13,6 +13,10 @@ from architectures import TimmModel, EfficientNetMix
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
 
+def advprop_fn(img, **kwargs):
+    # Transform for models pre-trained with advprop
+    return img * 2.0 - 1.0
+
 """
 TODO
 
@@ -22,7 +26,7 @@ TODO
 config = {
     ### Global parameters
     'ABS_PATH': "/workdir",
-    'NAME': 'julien_034',
+    'NAME': 'julien_036',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
@@ -33,7 +37,8 @@ config = {
 
     ### Model parameters
     'MODEL_CLS': EfficientNetMix,
-    'PRETRAINED_MODEL': 'efficientnet-b0',  # Don't forget to update the training data path with correct resolution
+    'PRETRAINED_MODEL': 'efficientnet-b0',
+    'ADVPROP': True,  # if True use: albumentations.Lambda(advprop_fn) instead of Normalize()
     'FINETUNING': True,
     'USE_GENDER': True,
     'USE_AGE': True,
@@ -47,19 +52,20 @@ config = {
     'VALID_BATCHSIZE': 16,
 
     'OPTIMIZER_CLS': torch.optim.Adam,
-    'OPTIMIZER_KWARGS': {'lr': 5e-5},  # all arguments passed to optimizer, except model parameters
+    'OPTIMIZER_KWARGS': {'lr': 1e-5},  # all arguments passed to optimizer, except model parameters
     # 'SCHEDULER_CLS': torch.optim.lr_scheduler.ExponentialLR,
     'SCHEDULER_CLS': None,
     'SCHEDULER_KWARGS': {'gamma': 0.9},  # all arguments except optimizer
     'APPLY_SCHEDULER_EACH_MINIBATCH': False,  # If False, apply each epoch. No scheduler if SCHEDULER_CLS is None
 
-    'EARLYSTOP_PATIENCE': 7,
+    'EARLYSTOP_PATIENCE': 3,
     'LOSS_FN': nn.BCELoss(),
 
     ### Pre-processing parameters:
     'TRAIN_AUGMENTATIONS': albumentations.Compose(
             [
-                albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True),
+                # albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True),
+                albumentations.Lambda(advprop_fn, always_apply=True),
                 # albumentations.RGBShift(p=0.2),
                 # albumentations.RandomContrast(p=0.2),
                 # albumentations.GridDropout(ratio=0.1, p=0.2),
@@ -70,7 +76,8 @@ config = {
             ]),
     'VALID_AUGMENTATIONS': albumentations.Compose(
             [
-                albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True)
+                # albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True)
+                albumentations.Lambda(advprop_fn, always_apply=True)
             ])
 }
 
