@@ -8,7 +8,7 @@ import albumentations
 
 from copy import copy
 from engine import launch
-from architectures import TimmModel, EfficientNet
+from architectures import TimmModel, EfficientNetMix
 
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
@@ -21,19 +21,19 @@ TODO
 
 config = {
     ### Global parameters
-    'ABS_PATH': "?",
-    'NAME': 'julien_033',
+    'ABS_PATH': "/workdir",
+    'NAME': 'julien_034',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
-    'FOLDS_FILENAME': 'train_folds_5.csv',
+    'FOLDS_FILENAME': 'train_folds_group_5.csv',
     'NR_FOLDS': 5,  # Number of folds to complete
-    'TRAINING_DATA_PATH': 'data/input/train380/',
-    'TEST_DATA_PATH': 'data/input/test380/',
+    'TRAINING_DATA_PATH': 'data/input/train224/',
+    'TEST_DATA_PATH': 'data/input/test224/',
 
     ### Model parameters
-    'MODEL_CLS': EfficientNet,
-    'PRETRAINED_MODEL': 'efficientnet-b4',  # Don't forget to update the training data path with correct resolution
+    'MODEL_CLS': EfficientNetMix,
+    'PRETRAINED_MODEL': 'efficientnet-b0',  # Don't forget to update the training data path with correct resolution
     'FINETUNING': True,
     'USE_GENDER': True,
     'USE_AGE': True,
@@ -43,7 +43,7 @@ config = {
 
     ### Training parameters:
     'NR_EPOCHS': 50,
-    'TRAIN_BATCHSIZE': 8,
+    'TRAIN_BATCHSIZE': 32,
     'VALID_BATCHSIZE': 16,
 
     'OPTIMIZER_CLS': torch.optim.Adam,

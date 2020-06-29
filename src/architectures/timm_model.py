@@ -12,6 +12,7 @@ model_name_to_fc_dim = {
     'resnext50_32x4d': 2048,
     'efficientnet_b2a': 1408,
     'tf_efficientnet_b4_ns': 1792,
+    'efficientnet-b0': 1280,
     'efficientnet-b4': 1792
 }
 
