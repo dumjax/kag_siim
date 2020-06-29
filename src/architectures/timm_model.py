@@ -124,7 +124,7 @@ class TimmModel2(nn.Module):
             nn.Linear(hidden_sizes[0], 10),
             #nn.BatchNorm1d(10),
             nn.ReLU(),
-            #nn.Dropout(p=0.2),
+            nn.Dropout(p=0.2),
             nn.Linear(10, 1)
         )
 
@@ -164,11 +164,11 @@ class TimmModel2(nn.Module):
         return x
 
 
-class EfficientNet(nn.Module):
+class EfficientNetMix(nn.Module):
     def __init__(self, config):
         """ Based on efficientnet_pytorch
         """
-        super(EfficientNet, self).__init__()
+        super(EfficientNetMix, self).__init__()
 
         self.use_gender = config['USE_GENDER']
         self.use_age = config['USE_AGE']

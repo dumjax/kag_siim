@@ -112,7 +112,7 @@ class EpochManager:
                 "auc": epoch_score,
                 "train_loss": self.train_loss,
                 "valid_loss": self.valid_loss,
-                "state_dict": model.state_dict
+                "state_dict": model.state_dict()
             }
 
             if not os.path.exists(self.path_model):

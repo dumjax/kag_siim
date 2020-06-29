@@ -21,10 +21,12 @@ from .utils import AverageMeter, EpochManager
 
 
 class MyDataset(Dataset):
-    def __init__(self, config, valid, image_paths, genders, ages, sites, targets):
+    def __init__(self, config, valid, image_paths, genders, ages, sites, targets=None, test=False):
+
+        self.test = test
+
         self.image_paths = image_paths
         self.genders = [0 if g == 'male' else (1 if g == 'female' else 0.5) for g in genders]  # TODO: use sklearn
-
         # TODO: use sklearn for this stuff. Also: try categorical?
         self.ages = [float(age) for age in ages]
         median_age = np.median([a for a in self.ages if not math.isnan(a)])
@@ -47,7 +49,7 @@ class MyDataset(Dataset):
 
     def __getitem__(self, item):
         image = Image.open(self.image_paths[item])
-        target = self.targets[item]
+
         gender = self.genders[item]
         age = self.ages[item]
         image = np.array(image)
@@ -60,24 +62,37 @@ class MyDataset(Dataset):
         gender = torch.tensor(gender, dtype=torch.float)
         age = torch.tensor(age, dtype=torch.float)
         sites = torch.tensor([s[item] for s in self.all_sites], dtype=torch.float)
-        target = torch.tensor(target, dtype=torch.float)
+
+        if not self.test:
+            target = self.targets[item]
+            target = torch.tensor(target, dtype=torch.float)
+        else:
+            target = torch.tensor(0, dtype=torch.float)
 
         return img, gender, age, sites, target
 
 
-def get_loader(config, df, valid: bool) -> DataLoader:
+def get_loader(config, df, valid: bool, test=False) -> DataLoader:
     """
     df: contains the data about the images to put in the returned loader
     valid: whether this is a validation set (otherwise it's a training set)
-    """    
-    images_fnames = list(map(lambda s: os.path.join(config['TRAINING_DATA_PATH'], s + ".jpg"), 
-                             df.image_name.values))
+    """
+    if test:
+        img_path = config['TEST_DATA_PATH']
+    else:
+        img_path = config['TRAINING_DATA_PATH']
+
+    images_fnames = list(map(lambda s: os.path.join(img_path, s + ".jpg"), df.image_name.values))
     
     df_encoded = pd.get_dummies(df, columns=['anatom_site_general_challenge'])  # 1-hot encode
     genders = df_encoded.sex.values
     ages = df_encoded.age_approx.values
     sites_indicators = [df_encoded[col].values for col in df_encoded.columns if col.startswith('anatom_site_general_challenge')]
-    targets = df_encoded.target.values
+
+    if not test:
+        targets = df_encoded.target.values
+    else:
+        targets = None
 
     dataset = MyDataset(
         config=config,
@@ -87,6 +102,7 @@ def get_loader(config, df, valid: bool) -> DataLoader:
         ages=ages,
         sites=sites_indicators,
         targets=targets,
+        test=test
     )
 
     return DataLoader(
@@ -198,3 +214,42 @@ def launch(config):
         scores.append(score)
     return scores
 
+
+def load_model(model_path, model_name, config):
+    # TODO check number of pth in model folder and run on them
+    models = []
+    for i in range(config['NR_FOLDS']):
+        path_tmp = os.path.join(model_path, model_name, model_name+"_"+str(i)+".pth")
+        if os.path.exists(path_tmp):
+            checkpoint = torch.load(os.path.join(model_path, model_name, model_name+"_"+str(i)+".pth"))
+            models.append(config['MODEL_CLS'](config))
+            models[-1].load_state_dict(checkpoint['state_dict'])
+            models[-1].to(config['DEVICE'])
+
+    return models
+
+
+def eval_submission(model_path, model_name, submission_path, config):
+    df_sub = pd.read_csv(os.path.join(submission_path, "sample_submission.csv"))
+    df_test = pd.read_csv("../data/raw/test.csv")
+    test_loader = get_loader(config, df_test, valid=True, test=True)
+    preds = torch.zeros((len(test_loader.dataset), 1), dtype=torch.float32)
+
+    batch_size = config['VALID_BATCHSIZE']
+    models = load_model(model_path, model_name, config)
+    for m in models:
+        m.eval()
+
+    with torch.no_grad():
+        tk0 = tqdm(test_loader, total=len(test_loader))
+        for b_idx, (imgs, genders, ages, sites, _) in enumerate(tk0):
+            imgs = imgs.to(config['DEVICE'])
+            genders = genders.to(config['DEVICE'])
+            ages = ages.to(config['DEVICE'])
+            sites = sites.to(config['DEVICE'])
+            for m in models:
+                preds[b_idx*batch_size:b_idx*batch_size+imgs.shape[0], :] += m(imgs, genders, ages, sites).cpu()
+
+    preds /= len(models)
+    df_sub['target'] = preds.numpy().reshape(-1,)
+    df_sub.to_csv(os.path.join('../models', model_name, model_name+"_sub.csv"), index=False)
