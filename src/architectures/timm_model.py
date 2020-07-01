@@ -14,6 +14,8 @@ model_name_to_fc_dim = {
     'tf_efficientnet_b4_ns': 1792,
     'efficientnet-b0': 1280,
     'efficientnet-b1': 1280,
+    'efficientnet-b2': 1408,
+    'efficientnet-b3': 1536,
     'efficientnet-b4': 1792
 }
 

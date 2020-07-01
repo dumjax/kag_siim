@@ -8,6 +8,10 @@
 * `notebooks/` contains the Jupyter notebooks. Notebooks should be personal, named `<USER>-<NAME>.ipynb`. For instance: `julien-resnetstests.ipynb`.
 * `models/` contains models parameters and historized source code from training (not committed on git) 
 
+## Extra Datasets
+* ISIC-2019 (apparently contains all ISICs from 2016 to 2018). Download: https://www.kaggle.com/andrewmvd/isic-2019
+Then extract to `data/isic-2019/`, and run `img_preproc.py` with `PROCESS_ISIC2019 = True`.
+
 ## Running Experiments
 * Specify your config in a script named like `src/<NAME>_blah.py` (see `src/julien_run_1.py` for an example)
 * From the folder `src/`, run `python <NAME>_blah.py`.

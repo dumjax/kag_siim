@@ -26,7 +26,7 @@ TODO
 config = {
     ### Global parameters
     'ABS_PATH': "/workdir",
-    'NAME': 'julien_036',
+    'NAME': 'julien_040',
     'SCRIPT_NAME': os.path.basename(__file__),
     'SEED': 41,
     'DEVICE': 'cuda',
@@ -38,7 +38,7 @@ config = {
     ### Model parameters
     'MODEL_CLS': EfficientNetMix,
     'PRETRAINED_MODEL': 'efficientnet-b0',
-    'ADVPROP': True,  # if True use: albumentations.Lambda(advprop_fn) instead of Normalize()
+    'ADVPROP': False,  # if True use: albumentations.Lambda(advprop_fn) instead of Normalize()
     'FINETUNING': True,
     'USE_GENDER': True,
     'USE_AGE': True,
@@ -64,8 +64,8 @@ config = {
     ### Pre-processing parameters:
     'TRAIN_AUGMENTATIONS': albumentations.Compose(
             [
-                # albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True),
-                albumentations.Lambda(advprop_fn, always_apply=True),
+                albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True),
+                # albumentations.Lambda(advprop_fn, always_apply=True),
                 # albumentations.RGBShift(p=0.2),
                 # albumentations.RandomContrast(p=0.2),
                 # albumentations.GridDropout(ratio=0.1, p=0.2),
@@ -76,8 +76,8 @@ config = {
             ]),
     'VALID_AUGMENTATIONS': albumentations.Compose(
             [
-                # albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True)
-                albumentations.Lambda(advprop_fn, always_apply=True)
+                albumentations.Normalize(MEAN, STD, max_pixel_value=255.0, always_apply=True)
+                # albumentations.Lambda(advprop_fn, always_apply=True)
             ])
 }
 
